@@ -8,6 +8,19 @@ class WeixinController extends BaseController {
 	 * @var integer
 	 */
 	private $_pageSize = 10;
+	/**
+	 * 微信模板
+	 */
+	private $_textTpl = "<xml>
+				<ToUserName><![CDATA[%s]]></ToUserName>
+				<FromUserName><![CDATA[%s]]></FromUserName>
+				<CreateTime>%s</CreateTime>
+				<MsgType><![CDATA[%s]]></MsgType>
+				<Content><![CDATA[%s]]></Content>
+				<FuncFlag>0</FuncFlag>
+				</xml>";
+
+
 
 	public function __construct() {
 		parent::__construct();
@@ -44,52 +57,58 @@ class WeixinController extends BaseController {
             $fromUsername = $postObj->FromUserName;
             $toUsername = $postObj->ToUserName;
             $keyword = trim($postObj->Content);
+			$msgType = trim($postObj->MsgType);
             $time = time();
-            $textTpl = "<xml>
-                        <ToUserName><![CDATA[%s]]></ToUserName>
-                        <FromUserName><![CDATA[%s]]></FromUserName>
-                        <CreateTime>%s</CreateTime>
-                        <MsgType><![CDATA[%s]]></MsgType>
-                        <Content><![CDATA[%s]]></Content>
-                        <FuncFlag>0</FuncFlag>
-                        </xml>";
-            if($keyword == "?" || $keyword == "？")
-            {
-                $msgType = "text";
-                $contentStr = date("Y-m-d H:i:s",time());
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-                echo $resultStr;
-            } else if($keyword == "梁丽") {
-				$msgType = "text";
-                $contentStr = date("Y-m-d H:i:s",time());
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, "我爱你");
-                echo $resultStr;
-			}  else if($keyword == "ceshi") {
-				$msgType = "text";
-                $contentStr = date("Y-m-d H:i:s",time());
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, "<b><i>我爱你</i></b>");
-                echo $resultStr;
-			} else {
+            $textTpl = $this->_textTpl;
 
-				// 测试输出
-				// 加载NewsModel
-				$this->load->model("newsModel");
-				// 计算页码
-				$newsArr = $this->newsModel->getNews(1, $this->_pageSize);
+			switch ($msgType) {
+				case 'text':
+					$responseContent = $this->_handleTextResponse($keyword);
+					$responseMsgType = "text";
+					break;
 
-				// 只获取显示的几列
-				$newsArr = get_some_column($newsArr, array(
-					"id", "title", "article_url", "behot_time"
-				));
+				default:
+					$responseContent = "暂时不支持该类型";
+					$responseMsgType = "text";
+					break;
+			}
 
-                $msgType = "text";
-                $contentStr = date("Y-m-d H:i:s",time());
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, json_encode($newsArr, JSON_UNESCAPED_UNICODE));
-                echo $resultStr;
-            }
+			$resultStr = sprintf($this->_textTpl, $fromUsername, $toUsername, $time, $responseMsgType, $responseContent);
+			echo $resultStr;
         }else{
-            echo "<b><i>ceshi</i></b>";
+            echo "<b><i'>ceshi</i></b>";
             exit;
         }
     }
+
+	/**
+	 * 处理普通文本消息
+	 * @param  [type] $keyword [description]
+	 * @return [type]          [description]
+	 */
+	private function _handleTextResponse($keyword = false) {
+
+		// 参数为空
+		if ($keyword === false || empty($keyword)) {
+			return false;
+		}
+
+		// 返回文本
+		$returnStr = '';
+
+		if (strpos($keyword, "梁丽") > -1) {
+			$returnStr = "我爱你";
+		}
+		if (strpos($keyword, "?") > -1 || strpos($keyword, "？") > -1) {
+			$returnStr = "你想表达啥";
+		}
+		if (strpos($keyword, "ceshi") > -1) {
+			$returnStr = "不怕我打你。。。";
+		}
+		if (strpos($keyword, "时间") > -1 || strpos($keyword, "time") > -1) {
+			$returnStr = date("Y-m-d H:i:s",time());
+		}
+
+		return $returnStr;
+	}
 }
