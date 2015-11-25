@@ -20,6 +20,21 @@ class WeixinController extends BaseController {
 				<FuncFlag>0</FuncFlag>
 				</xml>";
 
+	private $_imageTpl = "<xml>
+				<ToUserName><![CDATA[%s]]></ToUserName>
+				<FromUserName><![CDATA[%s]]></FromUserName>
+				<CreateTime>%s</CreateTime>
+				<MsgType><![CDATA[%s]]></MsgType>
+				<Image>
+					<MediaId><![CDATA[%s]]></MediaId>
+				</Image>
+				<FuncFlag>0</FuncFlag>
+				</xml>";
+
+	private $_fromUsername;
+	private $_toUsername;
+	private $_time;
+
 	public function __construct() {
 		parent::__construct();
 	}
@@ -52,16 +67,15 @@ class WeixinController extends BaseController {
 
         if (!empty($postStr)){
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $fromUsername = $postObj->FromUserName;
-            $toUsername = $postObj->ToUserName;
+            $this->_fromUsername = $postObj->FromUserName;
+            $this->_toUsername = $postObj->ToUserName;
 			$msgType = trim($postObj->MsgType);
-            $time = time();
+            $this->_time = time();
             $textTpl = $this->_textTpl;
 
 			switch ($msgType) {
 				case 'text':
-					$responseContent = $this->_handleTextResponse($postObj->Content);
-					$responseMsgType = "text";
+					$resultStr = $this->_handleTextResponse($postObj->Content);
 					break;
 
 				case 'image':
@@ -72,10 +86,10 @@ class WeixinController extends BaseController {
 				default:
 					$responseContent = "暂时不支持该类型";
 					$responseMsgType = "text";
+					$resultStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, $responseMsgType, $tmpStr);
 					break;
 			}
 
-			$resultStr = sprintf($this->_textTpl, $fromUsername, $toUsername, $time, $responseMsgType, $responseContent);
 			echo $resultStr;
         }else{
             echo "<b><i'>ceshi</i></b>";
@@ -99,16 +113,24 @@ class WeixinController extends BaseController {
 		$returnStr = '我也不知道该说啥了。。。';
 
 		if (strpos($keyword, "梁丽") > -1) {
-			$returnStr = "我爱你";
+			$tmpStr = "我爱你";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
 		if (strpos($keyword, "?") > -1 || strpos($keyword, "？") > -1) {
-			$returnStr = "你想表达啥";
+			$tmpStr = "你想表达啥";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
 		if (strpos($keyword, "ceshi") > -1) {
-			$returnStr = "不怕我打你。。。";
+			$tmpStr = "不怕我打你。。。";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
 		if (strpos($keyword, "时间") > -1 || strpos($keyword, "time") > -1) {
-			$returnStr = date("Y-m-d H:i:s",time());
+			$tmpStr = date("Y-m-d H:i:s",time());
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+		}
+		if (strpos($keyword, "图片") > -1) {
+			$tmpStr = "sBlDYJdHS3mVFIsWteSyqb_oAPOSVodHcYxFSl9nZLMKTb5tgF7zEmxAdaFDQQem";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "image", $tmpStr);
 		}
 
 		return $returnStr;
@@ -120,27 +142,6 @@ class WeixinController extends BaseController {
 	 * @return [type]          [description]
 	 */
 	private function _handleImageResponse($keyword = false) {
-
-		// 参数为空
-		if ($keyword === false || empty($keyword)) {
-			return false;
-		}
-
-		// 返回文本
-		$returnStr = '我也不知道该说啥了。。。';
-
-		if (strpos($keyword, "梁丽") > -1) {
-			$returnStr = "我爱你";
-		}
-		if (strpos($keyword, "?") > -1 || strpos($keyword, "？") > -1) {
-			$returnStr = "你想表达啥";
-		}
-		if (strpos($keyword, "ceshi") > -1) {
-			$returnStr = "不怕我打你。。。";
-		}
-		if (strpos($keyword, "时间") > -1 || strpos($keyword, "time") > -1) {
-			$returnStr = date("Y-m-d H:i:s",time());
-		}
 
 		return $returnStr;
 	}
