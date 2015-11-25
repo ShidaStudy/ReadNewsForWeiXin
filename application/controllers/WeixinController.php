@@ -64,6 +64,11 @@ class WeixinController extends BaseController {
                 $contentStr = date("Y-m-d H:i:s",time());
                 $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, "我爱你");
                 echo $resultStr;
+			}  else if($keyword == "ceshi") {
+				$msgType = "text";
+                $contentStr = date("Y-m-d H:i:s",time());
+                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, "<b><i>我爱你</i></b>");
+                echo $resultStr;
 			} else {
 
 				// 测试输出
@@ -77,14 +82,13 @@ class WeixinController extends BaseController {
 					"id", "title", "article_url", "behot_time"
 				));
 
-
                 $msgType = "text";
                 $contentStr = date("Y-m-d H:i:s",time());
                 $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, json_encode($newsArr, JSON_UNESCAPED_UNICODE));
                 echo $resultStr;
             }
         }else{
-            echo "";
+            echo "<b><i>ceshi</i></b>";
             exit;
         }
     }
