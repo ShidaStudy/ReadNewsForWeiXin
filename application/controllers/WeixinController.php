@@ -20,8 +20,6 @@ class WeixinController extends BaseController {
 				<FuncFlag>0</FuncFlag>
 				</xml>";
 
-
-
 	public function __construct() {
 		parent::__construct();
 	}
@@ -56,14 +54,18 @@ class WeixinController extends BaseController {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
             $fromUsername = $postObj->FromUserName;
             $toUsername = $postObj->ToUserName;
-            $keyword = trim($postObj->Content);
 			$msgType = trim($postObj->MsgType);
             $time = time();
             $textTpl = $this->_textTpl;
 
 			switch ($msgType) {
 				case 'text':
-					$responseContent = $this->_handleTextResponse($keyword);
+					$responseContent = $this->_handleTextResponse($postObj->Content);
+					$responseMsgType = "text";
+					break;
+
+				case 'image':
+					$responseContent = sprintf("图片链接：%s\n媒体 id:%s", trim($postObj->PicUrl), trim($postObj->MediaId));
 					$responseMsgType = "text";
 					break;
 
@@ -87,6 +89,37 @@ class WeixinController extends BaseController {
 	 * @return [type]          [description]
 	 */
 	private function _handleTextResponse($keyword = false) {
+
+		// 参数为空
+		if ($keyword === false || empty($keyword)) {
+			return false;
+		}
+
+		// 返回文本
+		$returnStr = '我也不知道该说啥了。。。';
+
+		if (strpos($keyword, "梁丽") > -1) {
+			$returnStr = "我爱你";
+		}
+		if (strpos($keyword, "?") > -1 || strpos($keyword, "？") > -1) {
+			$returnStr = "你想表达啥";
+		}
+		if (strpos($keyword, "ceshi") > -1) {
+			$returnStr = "不怕我打你。。。";
+		}
+		if (strpos($keyword, "时间") > -1 || strpos($keyword, "time") > -1) {
+			$returnStr = date("Y-m-d H:i:s",time());
+		}
+
+		return $returnStr;
+	}
+
+	/**
+	 * 处理普通文本消息
+	 * @param  [type] $keyword [description]
+	 * @return [type]          [description]
+	 */
+	private function _handleImageResponse($keyword = false) {
 
 		// 参数为空
 		if ($keyword === false || empty($keyword)) {
