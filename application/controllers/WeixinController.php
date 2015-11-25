@@ -75,7 +75,7 @@ class WeixinController extends BaseController {
 
                 $msgType = "text";
                 $contentStr = date("Y-m-d H:i:s",time());
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $newsArr);
+                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, json_encode($contentStr, JSON_UNESCAPED_UNICODE));
                 echo $resultStr;
             }
         }else{
