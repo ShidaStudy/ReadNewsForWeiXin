@@ -59,6 +59,24 @@ class WeixinController extends BaseController {
                 $contentStr = date("Y-m-d H:i:s",time());
                 $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
                 echo $resultStr;
+            } else {
+
+				// 测试输出
+				// 加载NewsModel
+				$this->load->model("newsModel");
+				// 计算页码
+				$newsArr = $this->newsModel->getNews(1, $this->_pageSize);
+
+				// 只获取显示的几列
+				$newsArr = get_some_column($newsArr, array(
+					"id", "title", "article_url", "behot_time"
+				));
+
+
+                $msgType = "text";
+                $contentStr = date("Y-m-d H:i:s",time());
+                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $newsArr);
+                echo $resultStr;
             }
         }else{
             echo "";
