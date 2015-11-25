@@ -94,7 +94,7 @@ class WeixinController extends BaseController {
 		}
 
 		// 返回文本
-		$returnStr = '';
+		$returnStr = '我也不知道该说啥了。。。';
 
 		if (strpos($keyword, "梁丽") > -1) {
 			$returnStr = "我爱你";
