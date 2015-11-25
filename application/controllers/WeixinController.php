@@ -81,12 +81,13 @@ class WeixinController extends BaseController {
 				case 'image':
 					$responseContent = sprintf("图片链接：%s\n媒体 id:%s", trim($postObj->PicUrl), trim($postObj->MediaId));
 					$responseMsgType = "text";
+					$resultStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, $responseMsgType, $responseContent);
 					break;
 
 				default:
 					$responseContent = "暂时不支持该类型";
 					$responseMsgType = "text";
-					$resultStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, $responseMsgType, $tmpStr);
+					$resultStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, $responseMsgType, $responseContent);
 					break;
 			}
 
@@ -110,7 +111,7 @@ class WeixinController extends BaseController {
 		}
 
 		// 返回文本
-		$returnStr = '我也不知道该说啥了。。。';
+		$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", '我也不知道该说啥了。。。');;
 
 		if (strpos($keyword, "梁丽") > -1) {
 			$tmpStr = "我爱你";
