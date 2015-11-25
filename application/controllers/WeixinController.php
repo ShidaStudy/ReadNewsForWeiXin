@@ -149,7 +149,7 @@ class WeixinController extends BaseController {
 		if (strpos($keyword, "音乐") > -1) {
 			$title = "被爱伤过的男人";
 			$description = "被爱伤过的男人， 演唱者：吕方";
-			$musicUrl = "http://play.baidu.com/?__m=mboxCtrl.playSong&__a=246614085&__o=song/246614085||playBtn&fr=altg_new3||www.baidu.com#";
+			$musicUrl = "http://sc.111t.com/up/mp3/1708610E79400060F.mp3";
 			$mediaId = "7idpN30xDpUjUHHB7GYDYbncFD0kppGiuNOY6qIkZp77ItKE8j8D1PZTYr-rqQfB";
 			$returnStr = sprintf($this->_musicTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "music", $title, $description, $musicUrl, $musicUrl, $mediaId);
 		}
