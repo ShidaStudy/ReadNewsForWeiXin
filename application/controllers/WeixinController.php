@@ -44,6 +44,23 @@ class WeixinController extends BaseController {
 				<FuncFlag>0</FuncFlag>
 				</xml>";
 
+	private $_newsTpl = "<xml>
+				<ToUserName><![CDATA[%s]]></ToUserName>
+				<FromUserName><![CDATA[%s]]></FromUserName>
+				<CreateTime>%s</CreateTime>
+				<MsgType><![CDATA[%s]]></MsgType>
+				<AritcleCount><![CDATA[%s]]></AritcleCount>
+				<Aritcles>
+					<![CDATA[%s]]>
+				</Aritcles>
+				</xml>";
+	private $_newsItemTpl = "<item>
+					<Title><![CDATA[%s]]></Title>
+					<Description><![CDATA[%s]]></Description>
+					<PicUrl><![CDATA[%s]]></PicUrl>
+					<Url><![CDATA[%s]]></Url>
+				</item>";
+
 	private $_fromUsername;
 	private $_toUsername;
 	private $_time;
@@ -153,9 +170,31 @@ class WeixinController extends BaseController {
 			$mediaId = "7idpN30xDpUjUHHB7GYDYbncFD0kppGiuNOY6qIkZp77ItKE8j8D1PZTYr-rqQfB";
 			$returnStr = sprintf($this->_musicTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "music", $title, $description, $musicUrl, $musicUrl, $mediaId);
 		}
+		if (strpos($keyword, "新闻") > -1) {
+			$tmpStr = $this->_getNews();
+			$returnStr = sprintf($this->_newsTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "news", $this->_pageSize, $tmpStr);
+		}
 
 
 		return $returnStr;
+	}
+
+	/**
+	 * 获取新闻列表
+	 * @return [type] [description]
+	 */
+	private function _getNews() {
+		// 加载NewsModel
+		$this->load->model("newsModel");
+		// 计算页码
+		$newsArr = $this->newsModel->getNews(1, $this->_pageSize);
+
+		$articles = '';
+		foreach ($newsArr as $value) {
+			$articles = $articles . sprintf($this->_newsItemTpl, "测试新闻", $value['title'], $value['title'], $value['article_url']);
+		}
+
+		return $articles;
 	}
 
 	/**
