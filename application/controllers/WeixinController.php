@@ -17,7 +17,6 @@ class WeixinController extends BaseController {
 				<CreateTime>%s</CreateTime>
 				<MsgType><![CDATA[%s]]></MsgType>
 				<Content><![CDATA[%s]]></Content>
-				<FuncFlag>0</FuncFlag>
 				</xml>";
 
 	private $_imageTpl = "<xml>
@@ -28,6 +27,20 @@ class WeixinController extends BaseController {
 				<Image>
 					<MediaId><![CDATA[%s]]></MediaId>
 				</Image>
+				</xml>";
+
+	private $_musicTpl = "<xml>
+				<ToUserName><![CDATA[%s]]></ToUserName>
+				<FromUserName><![CDATA[%s]]></FromUserName>
+				<CreateTime>%s</CreateTime>
+				<MsgType><![CDATA[%s]]></MsgType>
+				<Music>
+					<Title><![CDATA[%s]]></Title>
+					<Description><![CDATA[%s]]></Description>
+					<MusicUrl><![CDATA[%s]]></MusicUrl>
+					<HQMusicUrl><![CDATA[%s]]></HQMusicUrl>
+					<ThumbMediaId><![CDATA[%s]]></ThumbMediaId>
+				</Music>
 				<FuncFlag>0</FuncFlag>
 				</xml>";
 
@@ -131,8 +144,16 @@ class WeixinController extends BaseController {
 		}
 		if (strpos($keyword, "图片") > -1) {
 			$tmpStr = "7idpN30xDpUjUHHB7GYDYbncFD0kppGiuNOY6qIkZp77ItKE8j8D1PZTYr-rqQfB";
-			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "image", $tmpStr);
+			$returnStr = sprintf($this->_imageTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "image", $tmpStr);
 		}
+		if (strpos($keyword, "音乐") > -1) {
+			$title = "被爱伤过的男人";
+			$description = "被爱伤过的男人， 演唱者：吕方";
+			$musicUrl = "http://stor.vdisk.cn/loadfile/A5/A52579B803D32BFEED30AE32F2C90CFD?key=ca2d19639a6e5f404d6d4b1cfdf63302&tt=1448467000&st=9XDR0PTOIg37RVo0GdSM5g&filename=_.mp3";
+			$mediaId = "7idpN30xDpUjUHHB7GYDYbncFD0kppGiuNOY6qIkZp77ItKE8j8D1PZTYr-rqQfB";
+			$returnStr = sprintf($this->_musicTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "music", $title, $description, $musicUrl, $musicUrl, $mediaId);
+		}
+
 
 		return $returnStr;
 	}
