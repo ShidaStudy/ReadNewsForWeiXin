@@ -19,13 +19,13 @@ class WeixinController extends BaseController {
 	 */
 	public function index() {
 		if (isset($_GET['echostr'])) {
-		    $this->valid();
+		    $this->_valid();
 		}else{
-		    $this->responseMsg();
+		    $this->_responseMsg();
 		}
 	}
 
-	public function valid()
+	private function _valid()
     {
         $echoStr = $_GET["echostr"];
         if($this->checkSignature()){
@@ -35,7 +35,7 @@ class WeixinController extends BaseController {
         }
     }
 
-	public function responseMsg()
+	private function _responseMsg()
     {
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
 
