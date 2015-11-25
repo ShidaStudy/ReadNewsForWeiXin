@@ -30,7 +30,7 @@ class BaseController extends CI_Controller {
 	 * 验证微信协议
 	 * @return [type] [description]
 	 */
-	pubilc function checkSignature() {
+	public function checkSignature() {
         $signature = $_GET["signature"];
         $timestamp = $_GET["timestamp"];
         $nonce = $_GET["nonce"];
