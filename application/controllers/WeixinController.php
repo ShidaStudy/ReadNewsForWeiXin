@@ -191,7 +191,7 @@ class WeixinController extends BaseController {
 
 		$articles = '';
 		foreach ($newsArr as $value) {
-			$articles = $articles . sprintf($this->_newsItemTpl, "测试新闻", $value['title'], $value['title'], $value['article_url']);
+			$articles = $articles . sprintf($this->_newsItemTpl, "测试新闻", $value['title'], "http://img0.bdstatic.com/img/image/shouye/bizhi1124.jpg", $value['article_url']);
 		}
 
 		return $articles;
