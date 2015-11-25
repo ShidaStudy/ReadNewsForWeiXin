@@ -130,7 +130,7 @@ class WeixinController extends BaseController {
 			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
 		if (strpos($keyword, "图片") > -1) {
-			$tmpStr = "sBlDYJdHS3mVFIsWteSyqb_oAPOSVodHcYxFSl9nZLMKTb5tgF7zEmxAdaFDQQem";
+			$tmpStr = "7idpN30xDpUjUHHB7GYDYbncFD0kppGiuNOY6qIkZp77ItKE8j8D1PZTYr-rqQfB";
 			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "image", $tmpStr);
 		}
 
