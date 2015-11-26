@@ -51,7 +51,7 @@ class WeixinController extends BaseController {
 				<MsgType><![CDATA[%s]]></MsgType>
 				<AritcleCount><![CDATA[%s]]></AritcleCount>
 				<Aritcles>
-					<![CDATA[%s]]>
+					%s
 				</Aritcles>
 				</xml>";
 	private $_newsItemTpl = "<item>
@@ -172,7 +172,22 @@ class WeixinController extends BaseController {
 		}
 		if (strpos($keyword, "新闻") > -1) {
 			$tmpStr = $this->_getNews();
+			// dump($tmpStr);
+			// die;
 			$returnStr = sprintf($this->_newsTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "news", $this->_pageSize, $tmpStr);
+
+			//
+			//
+			// <xml>
+			// 			<ToUserName><![CDATA[%s]]></ToUserName>
+			// 			<FromUserName><![CDATA[%s]]></FromUserName>
+			// 			<CreateTime>%s</CreateTime>
+			// 			<MsgType><![CDATA[%s]]></MsgType>
+			// 			<AritcleCount><![CDATA[%s]]></AritcleCount>
+			// 			<Aritcles>
+			// 				<![CDATA[%s]]>
+			// 			</Aritcles>
+			// 			</xml>
 		}
 
 
