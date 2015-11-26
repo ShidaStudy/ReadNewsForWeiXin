@@ -89,15 +89,6 @@ switch (ENVIRONMENT)
 		exit(1); // EXIT_ERROR
 }
 
-
-/**
- *  self：自己的配置
- */
-// 引用 自动查找 文件
-include 'application/libraries/Autoload.php';
-// 设置 controller 后缀
-define('CONTROLLER_POSTFIX', 'Controller');
-
 /*
  *---------------------------------------------------------------
  * SYSTEM FOLDER NAME
@@ -290,6 +281,19 @@ define('CONTROLLER_POSTFIX', 'Controller');
 	}
 
 	define('VIEWPATH', $view_folder);
+
+
+
+
+
+	/**
+	 *  self：自己的配置
+	 */
+	// 引用 自动查找 文件
+	include 'application/libraries/Autoload.php';
+	// 设置 controller 后缀
+	define('CONTROLLER_POSTFIX', 'Controller');
+
 
 /*
  * --------------------------------------------------------------------

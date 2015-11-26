@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class BaseController extends CI_Controller {
 
 	const TOKEN = "weixin";
+	const APC_KEY_WEIXIN_TOKEN = "apc_key_weixin_token";
 	private $appID = "wx144bfba14c569582";
 	private $appSecret = "038dc0230812d8f9aff0160c6ee076ba";
 
@@ -57,6 +58,13 @@ class BaseController extends CI_Controller {
 	 * @return [type] [description]
 	 */
 	public function getAccessToken() {
+
+		// 读取APC缓存，看看有无值
+		// 返回token
+		if ($this->accessToken = apc_fetch(APC_KEY_WEIXIN_TOKEN)) {
+			return true;
+		}
+
 		// url
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
 		$url = sprintf($url, $this->_appID, $this->_appSecret);
@@ -75,6 +83,10 @@ class BaseController extends CI_Controller {
 			// {"access_token":"ACCESS_TOKEN","expires_in":7200}
 			$httpResultarr = json_decode($httpResult, true);
 			$this->accessToken = $httpResultarr['access_token'];
+
+			// 参考文件： http://www.phpddt.com/php/php-apc-functions.html
+			// access_token设置到 APC缓存里，有效期设置短一点（想想access_token的更新策略），这部分应该对用户透明，封装到 工具类里
+			apc_store(APC_KEY_WEIXIN_TOKEN, $httpResultarr['access_token'], $httpResultarr['expires_in']-1000);
 
 			// success
 			return true;

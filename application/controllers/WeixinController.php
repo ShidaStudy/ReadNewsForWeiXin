@@ -74,6 +74,20 @@ class WeixinController extends BaseController {
 	 * @return [type] [description]
 	 */
 	public function index() {
+
+
+		// 实例化 apc 缓存
+		$cacheUtil = CacheFactory::create('apc')->set(1,1,1);
+		die;
+
+
+		// $bar = 'BAR';
+  // 		apc_store('foos', $bar, 1);
+		var_dump(apc_fetch('foos'));
+		die;
+
+
+
 		if (isset($_GET['echostr'])) {
 		    $this->_valid();
 		}else{

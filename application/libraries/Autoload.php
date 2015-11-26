@@ -15,7 +15,7 @@ class AutoLoadUtil {
             // php mailer
             // 这里定义成具体的php文件，
             // 这样的定义一般用于处理类名和文件名不一致（没有关联的情况）
-            // 'PHPMailer' => INCLUDE_PATH . '/PHPMailer/class.phpmailer.php',
+            'CacheFactory' => APPPATH . '/libraries/Cache/CacheFactory.php',
             // 'PHPMailer' => INCLUDE_PATH . '/PHPMailer/class.phpmailer.php',
         );
         // 注册autoload函数到autoload栈中
