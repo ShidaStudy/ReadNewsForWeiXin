@@ -7,7 +7,7 @@ class WeixinController extends BaseController {
 	 * 分页条数
 	 * @var integer
 	 */
-	private $_pageSize = 10;
+	private $_pageSize = 5;
 	/**
 	 * 微信模板
 	 */
@@ -49,10 +49,10 @@ class WeixinController extends BaseController {
 				<FromUserName><![CDATA[%s]]></FromUserName>
 				<CreateTime>%s</CreateTime>
 				<MsgType><![CDATA[%s]]></MsgType>
-				<AritcleCount><![CDATA[%s]]></AritcleCount>
-				<Aritcles>
-					<![CDATA[%s]]>
-				</Aritcles>
+				<ArticleCount><![CDATA[%s]]></ArticleCount>
+				<Articles>
+					%s
+				</Articles>
 				</xml>";
 	private $_newsItemTpl = "<item>
 					<Title><![CDATA[%s]]></Title>
@@ -205,7 +205,7 @@ class WeixinController extends BaseController {
 
 		$articles = '';
 		foreach ($newsArr as $value) {
-			$articles = $articles . sprintf($this->_newsItemTpl, "测试新闻", $value['title'], "http://img0.bdstatic.com/img/image/shouye/bizhi1124.jpg", $value['article_url']);
+			$articles = $articles . sprintf($this->_newsItemTpl, $value['title'], $value['title'], "http://img0.bdstatic.com/img/image/shouye/bizhi1124.jpg", $value['article_url']);
 		}
 
 		return $articles;
