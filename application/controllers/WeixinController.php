@@ -7,7 +7,7 @@ class WeixinController extends BaseController {
 	 * 分页条数
 	 * @var integer
 	 */
-	private $_pageSize = 10;
+	private $_pageSize = 5;
 	/**
 	 * 微信模板
 	 */
