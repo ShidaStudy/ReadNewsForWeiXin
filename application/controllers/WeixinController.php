@@ -235,11 +235,10 @@ class WeixinController extends BaseController {
 					break;
 
 				default:
-					# code...
+					$tmpStr = "不要乱点。。。";
+					$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 					break;
 			}
-			$tmpStr = "您已经关注我了";
-			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
 
 
