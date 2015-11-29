@@ -77,16 +77,8 @@ class WeixinController extends BaseController {
 
 
 		// 实例化 apc 缓存
-		$cacheUtil = CacheFactory::create('apc')->set(1,1,1);
-		die;
-
-
-		// $bar = 'BAR';
-  // 		apc_store('foos', $bar, 1);
-		var_dump(apc_fetch('foos'));
-		die;
-
-
+		// $cacheUtil = CacheFactory::create('apc')->set(1,1,1);
+		// die;
 
 		if (isset($_GET['echostr'])) {
 		    $this->_valid();
@@ -126,6 +118,10 @@ class WeixinController extends BaseController {
 					$responseContent = sprintf("图片链接：%s\n媒体 id:%s", trim($postObj->PicUrl), trim($postObj->MediaId));
 					$responseMsgType = "text";
 					$resultStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, $responseMsgType, $responseContent);
+					break;
+
+				case 'event':
+					$resultStr = $this->_handleEventResponse($postObj);
 					break;
 
 				default:
@@ -189,6 +185,32 @@ class WeixinController extends BaseController {
 			$returnStr = sprintf($this->_newsTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "news", $this->_pageSize, $tmpStr);
 		}
 
+
+		return $returnStr;
+	}
+
+	/**
+	 * 处理响应事件
+	 * @param  [type] $keyword [description]
+	 * @return [type]          [description]
+	 */
+	private function _handleEventResponse($postObj = false) {
+
+		// 参数为空
+		if ($postObj === false) {
+			return false;
+		}
+
+		// 关注事件
+		if ($postObj->Event == "subscribe") {
+			$tmpStr = "感谢您的关注！";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+		}
+		// 已添加关注着扫描二维码
+		if ($postObj->Event == "SCAN") {
+			$tmpStr = "您已经关注我了";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+		}
 
 		return $returnStr;
 	}
