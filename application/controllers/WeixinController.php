@@ -74,17 +74,22 @@ class WeixinController extends BaseController {
 	 * @return [type] [description]
 	 */
 	public function index() {
-
-
-		// 实例化 apc 缓存
-		// $cacheUtil = CacheFactory::create('apc')->set(1,1,1);
-		// die;
-
 		if (isset($_GET['echostr'])) {
 		    $this->_valid();
 		}else{
 		    $this->_responseMsg();
 		}
+	}
+
+	/**
+	 * 获取 新闻列表
+	 * @return [type] [description]
+	 */
+	public function getMenu() {
+		$menuJson = $this->_createMenu();
+		dump($menuJson);
+		$menuJson = $this->_getMenu();
+		die($menuJson);
 	}
 
 	private function _valid()
@@ -211,9 +216,189 @@ class WeixinController extends BaseController {
 			$tmpStr = "您已经关注我了";
 			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
+		// 已添加关注着扫描二维码
+		if (strtoupper($postObj->Event) == "CLICK") {
+			switch ($postObj->EventKey) { //所选菜单的key
+				case 'V1001_TODAY_NEWS':
+					$tmpStr = $this->_getNews();
+					$returnStr = sprintf($this->_newsTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "news", $this->_pageSize, $tmpStr);
+					break;
+
+				case 'V1001_TODAY_TEST':
+					$tmpStr = "你想测试啥";
+					$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+					break;
+
+				case 'v1001_GOOD':
+					$tmpStr = "好人有好报，谢谢你哈~";
+					$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+					break;
+
+				default:
+					# code...
+					break;
+			}
+			$tmpStr = "您已经关注我了";
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+		}
+
 
 		return $returnStr;
 	}
+
+
+	/**
+	 * 处理普通文本消息
+	 * @param  [type] $keyword [description]
+	 * @return [type]          [description]
+	 */
+	private function _handleImageResponse($keyword = false) {
+
+		return $returnStr;
+	}
+
+	/**
+	 * 菜单管理 - 创建菜单
+	 */
+	 /**
+ 	 * 处理普通文本消息
+ 	 * @param  [type] $keyword [description]
+ 	 * @return [type]          [description]
+ 	 */
+ 	private function _createMenu() {
+
+		// 访问链接
+		if (($accessToken = $this->getAccessToken()) === false) {
+			return false;
+		}
+		$url = sprintf("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s", $accessToken);
+
+		// 菜单数组
+		$menuArr = array(
+			"button" => array(
+				array(
+					"type"=>"click",
+					"name"=>"今日新闻",
+					"key"=>"V1001_TODAY_NEWS",
+				),
+				array(
+					"type"=>"click",
+					"name"=>"测试",
+					"key"=>"V1001_TODAY_TEST",
+				),
+				array(
+					"name"=>"菜单",
+					"sub_button"=>array(
+						array(
+							"type"=>"view",
+							"name"=>"搜索",
+							"url"=>"https://www.baidu.com",
+						),
+						array(
+							"type"=>"view",
+							"name"=>"视频",
+							"url"=>"https://v.qq.com",
+						),
+						array(
+							"type"=>"click",
+							"name"=>"赞一下我们",
+							"key"=>"v1001_GOOD",
+						),
+					),
+				),
+			)
+		);
+
+		// 实例化 curl类
+		$httpCurl = new HttpCurl($url, 10);
+		// 设置post字段
+		$httpCurl->setData($menuArr);
+		// 发送消息 GET/POST
+		$httpResult = $httpCurl->send('POST', array(), true);
+		// 获取状态码
+        $httpStatus = $httpCurl->getStatus();
+		if ($httpStatus == 200) {
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
+				Logger::error("wx_createMenu---创建微信菜单错误。具体信息为：" . $httpResult);
+				return false;
+			}
+
+			return true;
+		}
+
+ 		return false;
+ 	}
+
+	/**
+	 * 菜单管理 - 删除菜单
+	 */
+	 /**
+ 	 * 处理普通文本消息
+ 	 * @param  [type] $keyword [description]
+ 	 * @return [type]          [description]
+ 	 */
+ 	private function _deleteMenu() {
+
+		// 访问链接
+		if (($accessToken = $this->getAccessToken()) === false) {
+			return false;
+		}
+		$url = sprintf("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=%s", $accessToken);
+
+		// 实例化 curl类
+		$httpCurl = new HttpCurl($url, 10);
+		// 发送消息 GET/POST
+		$httpResult = $httpCurl->send();
+		// 获取状态码
+        $httpStatus = $httpCurl->getStatus();
+		if ($httpStatus == 200) {
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
+				Logger::error("wx_deleteMenu---删除微信菜单错误。具体信息为：" . $httpResult);
+				return false;
+			}
+
+			return true;
+		}
+
+ 		return false;
+ 	}
+
+	/**
+	 * 菜单管理 - 删除菜单
+	 */
+	 /**
+ 	 * 处理普通文本消息
+ 	 * @param  [type] $keyword [description]
+ 	 * @return [type]          [description]
+ 	 */
+ 	private function _getMenu() {
+
+		// 访问链接
+		if (($accessToken = $this->getAccessToken()) === false) {
+			return false;
+		}
+		$url = sprintf("https://api.weixin.qq.com/cgi-bin/menu/get?access_token=%s", $accessToken);
+
+		// 实例化 curl类
+		$httpCurl = new HttpCurl($url, 10);
+		// 发送消息 GET/POST
+		$httpResult = $httpCurl->send();
+		// 获取状态码
+        $httpStatus = $httpCurl->getStatus();
+		if ($httpStatus == 200) {
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || is_empty($httpResultArr, 'menu')) {
+				Logger::error("wx_getMenu---获取微信菜单错误。具体信息为：" . $httpResult);
+				return false;
+			}
+
+			return $httpResult;
+		}
+
+		return false;
+ 	}
 
 	/**
 	 * 获取新闻列表
@@ -233,13 +418,4 @@ class WeixinController extends BaseController {
 		return $articles;
 	}
 
-	/**
-	 * 处理普通文本消息
-	 * @param  [type] $keyword [description]
-	 * @return [type]          [description]
-	 */
-	private function _handleImageResponse($keyword = false) {
-
-		return $returnStr;
-	}
 }

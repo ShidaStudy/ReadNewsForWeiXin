@@ -200,7 +200,7 @@ final class HttpCurl {
     /* (non-PHPdoc)
      * @see AbstractWindHttp::send()
      */
-    public function send($method = 'GET', $options = array()) {
+    public function send($method = 'GET', $options = array(), $isPOSTJsonData = false) {
         if ($this->data) {
             switch (strtoupper($method)) {
                 case 'GET':
@@ -210,9 +210,13 @@ final class HttpCurl {
                     break;
                 case 'POST':
                     $this->request(CURLOPT_POST, 1);
-                    $data = array();
-                    $this->_resolvedData($this->data, $data);
-                    $this->request(CURLOPT_POSTFIELDS, $data);
+                    if ($isPOSTJsonData === false) {
+                        $data = array();
+                        $this->_resolvedData($this->data, $data);
+                        $this->request(CURLOPT_POSTFIELDS, $data);
+                    }
+
+                    $this->request(CURLOPT_POSTFIELDS, json_encode($this->data, JSON_UNESCAPED_UNICODE));
                     break;
                 default:
                     break;

@@ -3,11 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class BaseController extends CI_Controller {
 
-	const TOKEN = "weixin";
-	const APC_KEY_WEIXIN_TOKEN = "apc_key_weixin_token";
-	private $appID = "wx144bfba14c569582";
-	private $appSecret = "038dc0230812d8f9aff0160c6ee076ba";
-
+	// accessToken 字符串
 	public $accessToken;
 
 	public function __construct() {
@@ -36,11 +32,11 @@ class BaseController extends CI_Controller {
 	 * @return [type] [description]
 	 */
 	public function checkSignature() {
-        $signature = $_GET["signature"];
-        $timestamp = $_GET["timestamp"];
-        $nonce = $_GET["nonce"];
+        $signature = $this->getParam("signature");
+        $timestamp = $this->getParam("timestamp");
+        $nonce = $this->getParam("nonce");
 
-        $token = self::TOKEN;
+        $token = WEIXIN_VALIDATE_TOKEN;
         $tmpArr = array($token, $timestamp, $nonce);
         sort($tmpArr, SORT_STRING);
         $tmpStr = implode( $tmpArr );
@@ -61,13 +57,13 @@ class BaseController extends CI_Controller {
 
 		// 读取APC缓存，看看有无值
 		// 返回token
-		if ($this->accessToken = apc_fetch(APC_KEY_WEIXIN_TOKEN)) {
-			return true;
+		if ($this->accessToken = CacheFactory::create()->get(CACHE_KEY_WEIXIN_TOKEN)) {
+			return $this->accessToken;
 		}
 
 		// url
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
-		$url = sprintf($url, $this->_appID, $this->_appSecret);
+		$url = sprintf($url, config_item("wx_app_id"), config_item("wx_app_secret"));
 
 		// 访问
 		// 实例化 curl类
@@ -81,20 +77,21 @@ class BaseController extends CI_Controller {
         if ($httpStatus === 200) {
 
 			// {"access_token":"ACCESS_TOKEN","expires_in":7200}
-			$httpResultarr = json_decode($httpResult, true);
-			$this->accessToken = $httpResultarr['access_token'];
-
-			// 参考文件： http://www.phpddt.com/php/php-apc-functions.html
-			// access_token设置到 APC缓存里，有效期设置短一点（想想access_token的更新策略），这部分应该对用户透明，封装到 工具类里
-			apc_store(APC_KEY_WEIXIN_TOKEN, $httpResultarr['access_token'], $httpResultarr['expires_in']-1000);
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || is_empty($httpResultArr, 'access_token')) {
+				Logger::error("wx_getAccessToken---获取微信信息错误。具体信息为：" . $httpResult);
+				return false;
+			}
+			$this->accessToken = $httpResultArr['access_token'];
+			// 写入缓存中
+			CacheFactory::create()->set(CACHE_KEY_WEIXIN_TOKEN, $httpResultArr['access_token'], $httpResultArr['expires_in']-1000);
 
 			// success
-			return true;
+			return $this->accessToken;
         } else {
 
             // 记录错误日志
             Logger.error(sprintf("错误状态码：?；错误信息：?"), $httpResult, json_encode($httpResult));
-
 			// fail
             return false;
         }

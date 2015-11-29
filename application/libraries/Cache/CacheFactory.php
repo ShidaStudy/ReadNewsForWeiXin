@@ -1,6 +1,7 @@
 <?php
 
 include_once 'ApcCache.php';
+include_once 'RedisCache.php';
 
 /**
  * 缓存工厂类
@@ -22,14 +23,18 @@ class CacheFactory {
      * @param type $which 需要实例化的HospitalRegister
      * @return type 实例化后的类或false
      */
-    public static function create( $which ) {
+    public static function create($which = false) {
+
+        if ($which === false) {
+            $which = config_item('redis_type');
+        }
 
 		switch ($which) {
 			case 'apc':
 				return ApcCache::getInstance();
 				break;
 			case 'redis':
-				# code...
+				return RedisCache::getInstance();
 				break;
 			case 'memcached':
 				# code...
@@ -39,20 +44,6 @@ class CacheFactory {
 				# code...
 				break;
 		}
-
-        //实例化类
-        $class_name = '\\HospitalRegister\\' . ucfirst(strtolower($which)) . 'Model';
-
-        $existClass = @class_exists($class_name);
-        if ($existClass === false) {
-            return false;
-        }
-
-        //创建注册Model层
-        $hospitalRegister = $class_name::getInstance();
-
-        //如果实例化成功，且是IHospitalRegisterModel 类的 instance
-        return ( $hospitalRegister instanceof IHospitalRegisterModel ) ? $hospitalRegister : FALSE ;
     }
 
 }

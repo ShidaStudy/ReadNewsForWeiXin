@@ -290,7 +290,7 @@ switch (ENVIRONMENT)
 	 *  self：自己的配置
 	 */
 	// 引用 自动查找 文件
-	include 'application/libraries/Autoload.php';
+	include APPPATH . '/libraries/Autoload.php';
 	// 设置 controller 后缀
 	define('CONTROLLER_POSTFIX', 'Controller');
 
