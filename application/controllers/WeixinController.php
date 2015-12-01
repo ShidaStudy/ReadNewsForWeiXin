@@ -189,7 +189,12 @@ class WeixinController extends BaseController {
 			$tmpStr = $this->_getNews();
 			$returnStr = sprintf($this->_newsTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "news", $this->_pageSize, $tmpStr);
 		}
-
+		if (strpos($keyword, "测试") > -1) {
+			$tmpStr = 'OAuth2.0网页授权演示
+						<a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx144bfba14c569582&redirect_uri=http://weixin.minglovejuan.club/oauth2.php&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect">点击这里体验</a>
+						技术支持 方倍工作室';
+			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
+		}
 
 		return $returnStr;
 	}
