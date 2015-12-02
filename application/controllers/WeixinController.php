@@ -88,6 +88,7 @@ class WeixinController extends BaseController {
 	public function oauth2() {
 
 		if (isset($_GET['code'])){
+			die("fsa");
 		    $accessToken = $this->_getAccessToken($_GET['code']);
 			$userInfo = $this->_getAccessToken($accessToken);
 			dump($userInfo);
