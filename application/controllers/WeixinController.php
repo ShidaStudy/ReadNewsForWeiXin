@@ -88,13 +88,18 @@ class WeixinController extends BaseController {
 	public function oauth2() {
 
 		if (isset($_GET['code'])){
-			die($_GET['code']);
 		    $accessToken = $this->_getAccessToken($_GET['code']);
 			$userInfo = $this->_getAccessToken($accessToken);
 			dump($userInfo);
 			die;
 		}else{
 		    echo "NO CODE";
+
+			$code = "021cc43a8bcce167df09aa21b79ff2ap";
+		    $accessToken = $this->_getAccessToken($code);
+			$userInfo = $this->_getAccessToken($accessToken);
+			dump($userInfo);
+			die;
 		}
 	}
 
@@ -112,6 +117,8 @@ class WeixinController extends BaseController {
 		$httpResult = $httpCurl->send('POST', array(), true);
 		// 获取状态码
         $httpStatus = $httpCurl->getStatus();
+		dump($httpResult);
+		die;
 		if ($httpStatus == 200) {
 			$httpResultArr = json_decode($httpResult, true);
 			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
