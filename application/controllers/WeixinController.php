@@ -117,8 +117,6 @@ class WeixinController extends BaseController {
 		$httpResult = $httpCurl->send('POST', array(), true);
 		// 获取状态码
         $httpStatus = $httpCurl->getStatus();
-		dump($httpResult);
-		die;
 		if ($httpStatus == 200) {
 			$httpResultArr = json_decode($httpResult, true);
 			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
@@ -133,7 +131,7 @@ class WeixinController extends BaseController {
 	}
 
 	private function _getUserInfo($accessToken) {
-		if ($code === false) {
+		if ($accessToken === false) {
 			return false;
 		}
 
