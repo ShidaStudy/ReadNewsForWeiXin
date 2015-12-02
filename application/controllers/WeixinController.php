@@ -82,6 +82,76 @@ class WeixinController extends BaseController {
 	}
 
 	/**
+	 * 获取 oauth2 code
+	 * @return [type] [description]
+	 */
+	public function oauth2() {
+
+		if (isset($_GET['code'])){
+		    $accessToken = $this->_getAccessToken($_GET['code']);
+			$userInfo = $this->_getAccessToken($accessToken);
+			dump($userInfo);
+			die;
+		}else{
+		    echo "NO CODE";
+		}
+	}
+
+	private function _getAccessToken($code = false) {
+		if ($code === false) {
+			return false;
+		}
+
+		$url = sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
+						config_item("wx_app_id"), config_item("wx_app_secret"), $code);
+
+		// 实例化 curl类
+		$httpCurl = new HttpCurl($url, 10);
+		// 发送消息 GET/POST
+		$httpResult = $httpCurl->send('POST', array(), true);
+		// 获取状态码
+        $httpStatus = $httpCurl->getStatus();
+		if ($httpStatus == 200) {
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
+				Logger::error("wx_createMenu---创建微信菜单错误。具体信息为：" . $httpResult);
+				return false;
+			}
+
+			return $httpResultArr['access_token'];
+		}
+
+		return false;
+	}
+
+	private function _getUserInfo($accessToken) {
+		if ($code === false) {
+			return false;
+		}
+
+		$url = sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s",
+						$accessToken, "4215646545");
+
+		// 实例化 curl类
+		$httpCurl = new HttpCurl($url, 10);
+		// 发送消息 GET/POST
+		$httpResult = $httpCurl->send('POST', array(), true);
+		// 获取状态码
+        $httpStatus = $httpCurl->getStatus();
+		if ($httpStatus == 200) {
+			$httpResultArr = json_decode($httpResult, true);
+			if (!is_array($httpResultArr) || !isset($httpResultArr['errcode']) || $httpResultArr['errcode'] != 0) {
+				Logger::error("wx_createMenu---创建微信菜单错误。具体信息为：" . $httpResult);
+				return false;
+			}
+
+			return $httpResultArr;
+		}
+
+		return false;
+	}
+
+	/**
 	 * 获取 新闻列表
 	 * @return [type] [description]
 	 */
@@ -191,7 +261,7 @@ class WeixinController extends BaseController {
 		}
 		if (strpos($keyword, "测试") > -1) {
 			$tmpStr = 'OAuth2.0网页授权演示
-						<a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx144bfba14c569582&redirect_uri=http://weixin.minglovejuan.club/oauth2.php&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect">点击这里体验</a>
+						<a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx144bfba14c569582&redirect_uri=http://weixin.minglovejuan.club/Weixin/oauth2&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect">点击这里体验</a>
 						技术支持 方倍工作室';
 			$returnStr = sprintf($this->_textTpl, $this->_fromUsername, $this->_toUsername, $this->_time, "text", $tmpStr);
 		}
